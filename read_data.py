@@ -37,7 +37,8 @@ def file_saver():
     data = graph_reader()
     with open (SAVE_FILE, "w") as f:
         for item in data:
-            print (item+"    ")
+            print (str(data[item])+"    ")
+            f.write(str(data[item])+"    ")
             
 
 
@@ -49,7 +50,7 @@ def graph_writer():
         for a in d:
             #print (a,end = " ")
             for l in d[a]:
-                print (a + "    "+ str(l))
+                #print (a + "    "+ str(l))
                 f.write(a + "    "+ str(l)+"\n")
             print ("")
 graph_writer()
