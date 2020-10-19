@@ -1,8 +1,9 @@
 # read data return as dictionary
 # parameter
-DATA_FILE = "testdata.txt"
-OUTPUT_FILE = "output.txt"
-SAVE_FILE = "savedata.txt"
+DATA_FILE = "./data/testdata.txt"
+OUTPUT_FILE = "./data/output.txt"
+SAVE_FILE = "./data/savedata.txt"
+
 
 def graph_reader():
     nodeDict={}
