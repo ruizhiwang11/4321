@@ -22,7 +22,7 @@ class BfsShortest(object):
     def __init__(self, g):
         self.g = g
 
-    def get_path(self, s, k):
+    def get_path(self, s, k=1):
         dist = {s: 0}  # distance from source to each node
         queue = [s]  # queue
         path = {}  # path from source to each node
@@ -37,6 +37,8 @@ class BfsShortest(object):
                     queue.append(neighbour)
                     if neighbour[1]:
                         hospital_nodes.append(neighbour)
+                if len(hospital_nodes) >= k:
+                    break
 
         if not hospital_nodes:
             print("There is no path to travel from source node to any hospital.")
@@ -72,6 +74,6 @@ if __name__ == "__main__":
     # prepare the graph
     bfs_shortest = BfsShortest(g)
     # prepare the source node and value k
-    s, k = ("4", False), 4
+    s, k = ("4", False), 2
     # find hospital(s)
     bfs_shortest.get_path(s, k)
