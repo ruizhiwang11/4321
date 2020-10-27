@@ -1,6 +1,6 @@
 
 graph = {}
-hospital = [3,9,37415,123,4654,5453,88453,12132,789,24,7987,213213,54546,546,7897,2121,1971278]
+hospital = [7,3,6,9,7878,7979,12121,12222,55569,123,3535,213123,223232,154564,89898,45545,98852,654511,58787,21232,8878,212312,8788,21212,54545,87,87,6332,87897,54642,121,3,545645,138,78,213,21,5,]
 
 class Node(object):
     taken = []
@@ -80,10 +80,10 @@ def find_hospitals(graph,start, k):
                         new_path.append(neighbour[0])
                         path_k.append(new_path)
                         founded_hospital.append(neighbour[0])
+                        queue.append(new_path)
                         k -= 1
                         print(new_path)
-                    else:
-                        continue
+
             explored.append(node)
     if len(path_k) == 0:
         return "no hospital can be found on this starting point"
@@ -92,4 +92,4 @@ def find_hospitals(graph,start, k):
     else:
         return path_k
 
-print(find_hospitals(graph,3,16))
+print(find_hospitals(graph,213155,3))
