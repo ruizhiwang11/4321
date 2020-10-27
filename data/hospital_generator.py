@@ -14,24 +14,24 @@ class HospitalGenerator:
         self.__graph_path = graph_path
         with open(graph_path, "r") as f:
             for row in f:
-                node_id = row.split()[0]
+                node_id = int(row.split()[0])
                 if node_id not in self.__nodes:
                     self.__nodes.append(node_id)
 
     def _get_hospitals(self, hospital_ratio):
         """create a list of random hospital nodes"""
         num_hospital = int(math.floor(len(self.__nodes) * hospital_ratio / 100))
-        return sorted(random.choices(self.__nodes, k=num_hospital))  # need python3
+        return sorted(random.choices(self.__nodes, k=num_hospital))
 
-    def generate(self, hospital_ratio=3):
-        """[hospital_ratio] should be from 1 to 10 as the accurate hospital ratio"""
+    def generate(self, hospital_ratio=1):
+        """[hospital_ratio] should be from 0(exclusive) to 10 as the accurate hospital ratio"""
 
         if (
             not (isinstance(hospital_ratio, int) or isinstance(hospital_ratio, float))
-            or hospital_ratio < 1
+            or hospital_ratio <= 0
             or hospital_ratio > 10
         ):
-            raise Exception("Please input hospital ratio from 1 to 10.")
+            raise Exception("Please input hospital ratio from 0(exclusive) to 10.")
 
         hospital_nodes = self._get_hospitals(hospital_ratio)
 
