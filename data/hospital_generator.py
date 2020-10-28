@@ -18,22 +18,25 @@ class HospitalGenerator:
                 if node_id not in self.__nodes:
                     self.__nodes.append(node_id)
 
-    def _get_hospitals(self, hospital_ratio):
-        """create a list of random hospital nodes"""
-        num_hospital = int(math.floor(len(self.__nodes) * hospital_ratio / 100))
-        return sorted(random.choices(self.__nodes, k=num_hospital))
+    def generate(self, hospital_number=None, hospital_ratio=None):
+        """
+        refer to test cases in the end of the file for function input
+        [hospital_number] any number less than number of nodes
+        [hospital_ratio] should be from 0(exclusive) to 10 as the accurate hospital ratio
+        """
 
-    def generate(self, hospital_ratio=1):
-        """[hospital_ratio] should be from 0(exclusive) to 10 as the accurate hospital ratio"""
-
-        if (
-            not (isinstance(hospital_ratio, int) or isinstance(hospital_ratio, float))
-            or hospital_ratio <= 0
-            or hospital_ratio > 10
-        ):
+        if hospital_ratio and (hospital_ratio <= 0 or hospital_ratio > 10):
             raise Exception("Please input hospital ratio from 0(exclusive) to 10.")
 
-        hospital_nodes = self._get_hospitals(hospital_ratio)
+        if hospital_number and hospital_number > len(self.__nodes):
+            raise Exception("number of hospitals exceeds number of nodes.")
+
+        num_hospital = (
+            int(math.floor(len(self.__nodes) * hospital_ratio / 100))
+            if hospital_ratio
+            else hospital_number
+        ) or 1
+        hospital_nodes = sorted(random.choices(self.__nodes, k=num_hospital))
 
         filename = f"./hospital_txts/{self.__graph_path.split('/')[-1].split('.')[0]}_hospitals.txt"
         if not os.path.exists(os.path.dirname(filename)):
@@ -47,13 +50,16 @@ class HospitalGenerator:
 
 # test cases
 hg = HospitalGenerator("./testGraphs/testfile1.txt")
-# hg.generate(0)
-# hg.generate(11)
-# hg.generate(-2)
-# hg.generate("asdq")
-# hg.generate(0.5)
-# hg.generate(10.5)
-# hg.generate(5.5)
-hg.generate()
+# hg.generate(hospital_ratio=0)
+# hg.generate(hospital_ratio=11)
+# hg.generate(hospital_ratio=-2)
+# hg.generate(hospital_ratio="asdq")
+# hg.generate(99999999999999)
+# hg.generate(99999999999999, 5)
+# hg.generate(5, 500)
+
+# VALID input tests
+# hg.generate(5, 2)
+# hg.generate(hospital_ratio=5.5)
 # hg.generate(5)
-# hg.generate(10)
+# hg.generate()
