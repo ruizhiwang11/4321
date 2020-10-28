@@ -10,13 +10,15 @@ class HospitalGenerator:
         if not os.path.isfile(graph_path):
             raise Exception("Please input correct graph file path")
 
-        self.__nodes = []
         self.__graph_path = graph_path
         with open(graph_path, "r") as f:
+            nodes_set = set()
             for row in f:
-                node_id = int(row.split()[0])
-                if node_id not in self.__nodes:
-                    self.__nodes.append(node_id)
+                node_id = row.split()[0]
+                if node_id == "#":
+                    continue
+                nodes_set.add(int(node_id))
+            self.__nodes = list(nodes_set)
 
     def generate(self, hospital_number=None, hospital_ratio=None):
         """
@@ -49,7 +51,7 @@ class HospitalGenerator:
 
 
 # test cases
-hg = HospitalGenerator("./testGraphs/testfile1.txt")
+hg = HospitalGenerator("./roadNet-CA.txt")
 # hg.generate(hospital_ratio=0)
 # hg.generate(hospital_ratio=11)
 # hg.generate(hospital_ratio=-2)
@@ -62,4 +64,4 @@ hg = HospitalGenerator("./testGraphs/testfile1.txt")
 # hg.generate(5, 2)
 # hg.generate(hospital_ratio=5.5)
 # hg.generate(5)
-# hg.generate()
+hg.generate(340)
