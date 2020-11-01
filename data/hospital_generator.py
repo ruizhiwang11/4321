@@ -26,7 +26,6 @@ class HospitalGenerator:
         [hospital_number] any number less than number of nodes
         [hospital_ratio] should be from 0(exclusive) to 10 as the accurate hospital ratio
         """
-
         if hospital_ratio and (hospital_ratio <= 0 or hospital_ratio > 10):
             raise Exception("Please input hospital ratio from 0(exclusive) to 10.")
 
@@ -38,7 +37,7 @@ class HospitalGenerator:
             if hospital_ratio
             else hospital_number
         ) or 1
-        hospital_nodes = sorted(random.choices(self.__nodes, k=num_hospital))
+        hospital_nodes = sorted(random.sample(self.__nodes, num_hospital))
 
         filename = f"./hospital_txts/{self.__graph_path.split('/')[-1].split('.')[0]}_hospitals.txt"
         if not os.path.exists(os.path.dirname(filename)):
@@ -49,19 +48,23 @@ class HospitalGenerator:
             for node in hospital_nodes:
                 f.write(f"{node}\n")
 
+        print(f"> generated hospital text file - {filename}")
+        return filename
 
-# test cases
-hg = HospitalGenerator("./roadNet-CA.txt")
-# hg.generate(hospital_ratio=0)
-# hg.generate(hospital_ratio=11)
-# hg.generate(hospital_ratio=-2)
-# hg.generate(hospital_ratio="asdq")
-# hg.generate(99999999999999)
-# hg.generate(99999999999999, 5)
-# hg.generate(5, 500)
 
-# VALID input tests
-# hg.generate(5, 2)
-# hg.generate(hospital_ratio=5.5)
-# hg.generate(5)
-hg.generate(340)
+if __name__ == "__main__":
+    # test cases
+    hg = HospitalGenerator("./roadNet-CA.txt")
+    # hg.generate(hospital_ratio=0)
+    # hg.generate(hospital_ratio=11)
+    # hg.generate(hospital_ratio=-2)
+    # hg.generate(hospital_ratio="asdq")
+    # hg.generate(99999999999999)
+    # hg.generate(99999999999999, 5)
+    # hg.generate(5, 500)
+
+    # VALID input tests
+    # hg.generate(5, 2)
+    # hg.generate(hospital_ratio=5.5)
+    # hg.generate(5)
+    print(hg.generate(340))
