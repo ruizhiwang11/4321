@@ -32,39 +32,37 @@ class HospitalFinder:
         """search for k hospitals from any node"""
         flag = k
         path_k = []
-        explored = []
+        explored = set()
         queue = [[start]]
-        founded_hospital = []
-        # TODO: find out why its so slow to search
+        founded_hospital = set()
         if start in self.__hospitals:
             k-=1
             path_k.append(start)
-            founded_hospital.append(start)
+            founded_hospital.add(start)
         while queue and k > 0:
             path = queue.pop(0)
             node = path[-1]
             if node not in explored:
                 neighbours = self.__graph[node]
                 for neighbour in neighbours:
-                    if neighbour[1] is False:
+                    if not neighbour[1]:
                         if neighbour[0] in explored:
                             continue
                         else:
                             new_path = list(path)
                             new_path.append(neighbour[0])
                             queue.append(new_path)
-
                     else:
                         if neighbour[0] not in founded_hospital:
                             new_path = list(path)
                             new_path.append(neighbour[0])
                             path_k.append(new_path)
-                            founded_hospital.append(neighbour[0])
+                            founded_hospital.add(neighbour[0])
                             queue.append(new_path)
                             k -= 1
                             print(new_path)
 
-                explored.append(node)
+                explored.add(node)
         if not path_k:
             return "no hospital can be found on this starting point"
         if k > 0:
@@ -74,4 +72,4 @@ class HospitalFinder:
 
 
 hospital_finder = HospitalFinder("./roadNet-CA.txt")
-print(hospital_finder.search(213155, 3))
+print(hospital_finder.search(213155, 16))
