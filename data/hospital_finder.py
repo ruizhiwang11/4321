@@ -1,10 +1,25 @@
-class HospitalFinder:
-    def __init__(self, graph_path):
-        # TODO: use HospitalGenerator class to fill up hospitals
-        self.__hospitals = [7,3,6,9,7878,7979,12121,12222,55569,123,3535,213123,223232,154564,89898,45545,98852,654511,58787,21232,8878,212312,8788,21212,54545,87,87,6332,87897,54642,121,3,545645,138,78,213,21,5,]
-        self.__graph = self._init_graph(graph_path, self.__hospitals)
+from hospital_generator import HospitalGenerator
 
-    def _init_graph(self, graph_path, hospital_list):
+
+class HospitalFinder:
+    NUM_HOSPITAL = 340
+
+    def __init__(self, graph_path):
+        self.__graph, self.__hospitals = self._init_graph(graph_path)
+        print(f"> generated {len(self.__hospitals)} hospitals")
+
+    def _init_graph(self, graph_path):
+        # generating hospital list
+        hospital_list = set()
+        hospitals_path = HospitalGenerator(graph_path).generate(self.NUM_HOSPITAL)
+        with open(hospitals_path, "r") as f:
+            for row in f:
+                id = row.split()[0]
+                if id == "#":
+                    continue
+                hospital_list.add(int(id))
+
+        # generating graph
         graph = {}
         with open(graph_path, "r") as f:
             last_node_id = -1
@@ -26,7 +41,8 @@ class HospitalFinder:
                 temp_list.append(neighbor_node)
                 graph[node_id] = temp_list
                 last_node_id = node_id
-        return graph
+
+        return graph, hospital_list
 
     def search(self, start, k):
         """search for k hospitals from any node"""
@@ -72,4 +88,4 @@ class HospitalFinder:
 
 
 hospital_finder = HospitalFinder("./roadNet-CA.txt")
-print(hospital_finder.search(213155, 16))
+print(hospital_finder.search(539695, 20))
