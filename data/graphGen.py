@@ -1,7 +1,7 @@
 import networkx as nx
 FILENAME = "testGraphs/testfile6.txt"
 
-G = nx.connected_watts_strogatz_graph(1001, 10, 0, )
+G = nx.fast_gnp_random_graph(1001, 0.02)
 
 print("nodes() ============================================")
 print(G.nodes())
@@ -26,9 +26,12 @@ y = [False] * 1001
 for row in f:
     x = row.split()
 #    print(x[0])
-    if x[0].isdigit() == True:
-        if y[int(x[0])] == False:
+    if x[0].isdigit():
+        if not y[int(x[0])]:
             y[int(x[0])] = True
+    if x[1].isdigit():
+        if not y[int(x[1])]:
+            y[int(x[1])] = True
 for i in range(1000):
-    if y[i] == False:
+    if not y[i]:
         print(i, "does not have edge")
