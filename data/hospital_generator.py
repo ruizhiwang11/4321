@@ -37,7 +37,7 @@ class HospitalGenerator:
             if hospital_ratio
             else hospital_number
         ) or 1
-        hospital_nodes = sorted(random.choices(self.__nodes, k=num_hospital))
+        hospital_nodes = sorted(random.sample(self.__nodes, num_hospital))
 
         filename = f"./hospital_txts/{self.__graph_path.split('/')[-1].split('.')[0]}_hospitals.txt"
         if not os.path.exists(os.path.dirname(filename)):
