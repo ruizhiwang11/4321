@@ -1,3 +1,5 @@
+import os
+
 from hospital_generator import HospitalGenerator
 
 
@@ -5,13 +7,16 @@ class HospitalFinder:
     NUM_HOSPITAL = 340
 
     def __init__(self, graph_path):
-        self.__graph, self.__hospitals = self._init_graph(graph_path)
+        self.__graph_path = graph_path
+        self.__graph, self.__hospitals = self._init_graph()
         print(f"> generated {len(self.__hospitals)} hospitals")
 
-    def _init_graph(self, graph_path):
+    def _init_graph(self):
         # generating hospital list
         hospital_list = set()
-        hospitals_path = HospitalGenerator(graph_path).generate(self.NUM_HOSPITAL)
+        hospitals_path = HospitalGenerator(self.__graph_path).generate(
+            self.NUM_HOSPITAL
+        )
         with open(hospitals_path, "r") as f:
             for row in f:
                 id = row.split()[0]
@@ -21,7 +26,7 @@ class HospitalFinder:
 
         # generating graph
         graph = {}
-        with open(graph_path, "r") as f:
+        with open(self.__graph_path, "r") as f:
             last_node_id = -1
             temp_list = []
 
@@ -44,15 +49,15 @@ class HospitalFinder:
 
         return graph, hospital_list
 
-    def search(self, start, k):
+    def _search(self, **kwargs):
         """search for k hospitals from any node"""
-        flag = k
+        start, k = kwargs.get("start"), kwargs.get("k")
         path_k = []
         explored = set()
         queue = [[start]]
         founded_hospital = set()
         if start in self.__hospitals:
-            k-=1
+            k -= 1
             path_k.append(start)
             founded_hospital.add(start)
         while queue and k > 0:
@@ -76,16 +81,51 @@ class HospitalFinder:
                             founded_hospital.add(neighbour[0])
                             queue.append(new_path)
                             k -= 1
-                            print(new_path)
 
                 explored.add(node)
-        if not path_k:
+        return path_k
+
+    def print_result(self, **kwargs):
+        """print search result"""
+        result = self._search(**kwargs)
+        num_hospital = kwargs.get("k")
+
+        if not result:
             return "no hospital can be found on this starting point"
-        if k > 0:
-            return f"We can only find {flag - k} hospitals from this starting point"
-        else:
-            return path_k
+        if len(result) < num_hospital:
+            return f"We can only find {num_hospital - len(result)} hospitals from this starting point"
+
+        for path in result:
+            print(path)
+
+    def save_result(self, **kwargs):
+        """save search result into a text file"""
+        result = self._search(**kwargs)
+        num_hospital = kwargs.get("k")
+
+        filename = (
+            f"./result_txts/{self.__graph_path.split('/')[-1].split('.')[0]}_result.txt"
+        )
+        if not os.path.exists(os.path.dirname(filename)):
+            os.makedirs(os.path.dirname(filename))
+
+        with open(filename, "w") as f:
+            f.write(f">>>>>>> Path for {num_hospital} hospital(s) <<<<<<<\n\n")
+            for path in result:
+                index = 1
+                f.write(
+                    f"[Distance(Edges): {len(path)}, Destination: Hospital {path[-1]}]\n"
+                )
+                for node in path:
+                    f.write(str(node))
+                    if index != len(path):
+                        f.write(" -> ")
+                    else:
+                        f.write("\n\n")
+                    index += 1
+
+        print(f"> generated result text file - {filename}")
 
 
 hospital_finder = HospitalFinder("./roadNet-CA.txt")
-print(hospital_finder.search(539695, 20))
+hospital_finder.save_result(start=539695, k=3)
