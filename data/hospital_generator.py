@@ -29,13 +29,10 @@ class HospitalGenerator:
         if hospital_ratio and (hospital_ratio <= 0 or hospital_ratio > 10):
             raise Exception("Please input hospital ratio from 0(exclusive) to 10.")
 
-        if hospital_number and hospital_number > len(self.__nodes):
-            raise Exception("number of hospitals exceeds number of nodes.")
-
         num_hospital = (
             int(math.floor(len(self.__nodes) * hospital_ratio / 100))
             if hospital_ratio
-            else hospital_number
+            else min(hospital_number, len(self.__nodes))
         ) or 1
         hospital_nodes = sorted(random.sample(self.__nodes, num_hospital))
 
@@ -48,7 +45,7 @@ class HospitalGenerator:
             for node in hospital_nodes:
                 f.write(f"{node}\n")
 
-        print(f"> generated hospital text file - {filename}")
+        print(f"generated hospital text file - {filename}")
         return filename
 
 

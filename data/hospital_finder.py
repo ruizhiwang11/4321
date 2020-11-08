@@ -1,22 +1,20 @@
 import os
+import time
 
 from hospital_generator import HospitalGenerator
 
 
 class HospitalFinder:
-    NUM_HOSPITAL = 340
-
-    def __init__(self, graph_path):
+    def __init__(self, graph_path, total_hospital):
         self.__graph_path = graph_path
-        self.__graph, self.__hospitals = self._init_graph()
-        print(f"> generated {len(self.__hospitals)} hospitals")
+        self.__graph, self.__hospitals = self._init_graph(total_hospital)
+        print(f"generated {len(self.__hospitals)} hospitals")
 
-    def _init_graph(self):
+    def _init_graph(self, total_hospital):
+        print(f"preparing graph...")
         # generating hospital list
         hospital_list = set()
-        hospitals_path = HospitalGenerator(self.__graph_path).generate(
-            self.NUM_HOSPITAL
-        )
+        hospitals_path = HospitalGenerator(self.__graph_path).generate(total_hospital)
         with open(hospitals_path, "r") as f:
             for row in f:
                 id = row.split()[0]
@@ -49,7 +47,18 @@ class HospitalFinder:
 
         return graph, hospital_list
 
+    @property
+    def graph(self):
+        return self.__graph
+
+    @property
+    def hospitals(self):
+        return self.__hospitals
+
     def _search(self, **kwargs):
+        # record start time
+        start_time = time.time()
+
         """search for k hospitals from any node"""
         start, k = kwargs.get("start"), kwargs.get("k")
         path_k = []
@@ -83,11 +92,12 @@ class HospitalFinder:
                             k -= 1
 
                 explored.add(node)
-        return path_k
+
+        return path_k, time.time() - start_time
 
     def print_result(self, **kwargs):
         """print search result"""
-        result = self._search(**kwargs)
+        result, time_taken = self._search(**kwargs)
         num_hospital = kwargs.get("k")
 
         if not result:
@@ -95,12 +105,23 @@ class HospitalFinder:
         if len(result) < num_hospital:
             return f"We can only find {num_hospital - len(result)} hospitals from this starting point"
 
+        print(f"\n\n>>>>>>> Path for {num_hospital} hospital(s) <<<<<<<\n")
         for path in result:
-            print(path)
+            print(f"[Distance(Edges): {len(path)}, Destination: Hospital {path[-1]}]")
+            for index, node in enumerate(path, start=1):
+                print(str(node), end="")
+                if index != len(path):
+                    print(" -> ", end="")
+                else:
+                    print("\n")
+
+        print(
+            f"TIME TAKEN to find {num_hospital} closest hospital(s) {time_taken} seconds."
+        )
 
     def save_result(self, **kwargs):
         """save search result into a text file"""
-        result = self._search(**kwargs)
+        result, time_taken = self._search(**kwargs)
         num_hospital = kwargs.get("k")
 
         filename = (
@@ -112,20 +133,16 @@ class HospitalFinder:
         with open(filename, "w") as f:
             f.write(f">>>>>>> Path for {num_hospital} hospital(s) <<<<<<<\n\n")
             for path in result:
-                index = 1
                 f.write(
                     f"[Distance(Edges): {len(path)}, Destination: Hospital {path[-1]}]\n"
                 )
-                for node in path:
+                for index, node in enumerate(path, start=1):
                     f.write(str(node))
                     if index != len(path):
                         f.write(" -> ")
                     else:
                         f.write("\n\n")
-                    index += 1
-
-        print(f"> generated result text file - {filename}")
-
-
-hospital_finder = HospitalFinder("./roadNet-CA.txt")
-hospital_finder.save_result(start=539695, k=3)
+        print(f"search result has been stored into text file - {filename}")
+        print(
+            f"TIME TAKEN to find {num_hospital} closest hospital(s) {time_taken} seconds."
+        )
