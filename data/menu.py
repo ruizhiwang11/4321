@@ -11,11 +11,12 @@ class Menu:
     TEST = 3
     EXIT = 4
     H_TEST = 1
+    K_TEST = 2
     PRINT = 1
     FILE = 2
 
     MENU_OPTIONS = (REAL, SMALL, TEST, EXIT)
-    TEST_MENU_OPTIONS = [H_TEST]
+    TEST_MENU_OPTIONS = (H_TEST, K_TEST)
     OUTPUT_OPTIONS = (PRINT, FILE)
 
     REAL_GRAPH_PATH = "./roadNet-CA.txt"
@@ -46,6 +47,7 @@ class Menu:
             ********************************************
             |                                          |
             |   1. K is unchanged, H increases         |
+            |   2. H is unchanged, K increases         |
             |                                          |
             ********************************************
             """
@@ -151,10 +153,24 @@ class Menu:
         hospital_finder.hospitals = hospital_large_list
         hospital_finder.print_result(start=start_node, k=num_hospital_to_search)
 
+    def _k_test_option(self):
+        hospital_finder = HospitalFinder(self.REAL_GRAPH_PATH)
+        start_node = 0
+
+        print("\n\n---------------------------------------------------")
+        print(f"\nTest result for {len(hospital_finder.hospitals)} hospitals with k=3")
+        hospital_finder.print_result(start=start_node, k=3)
+
+        print("\n\n---------------------------------------------------")
+        print(f"\nTest result for {len(hospital_finder.hospitals)} hospitals with k=50")
+        hospital_finder.print_result(start=start_node, k=50)
+
     def _test_option(self):
         test_selection = self._request_test_type()
         if test_selection == self.H_TEST:
             self._h_test_option()
+        elif test_selection == self.K_TEST:
+            self._k_test_option()
 
         return self._request_type()
 
