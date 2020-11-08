@@ -5,7 +5,7 @@ from hospital_generator import HospitalGenerator
 
 
 class HospitalFinder:
-    def __init__(self, graph_path, total_hospital):
+    def __init__(self, graph_path, total_hospital=340):
         self.__graph_path = graph_path
         self.__graph, self.__hospitals = self._init_graph(total_hospital)
         print(f"generated {len(self.__hospitals)} hospitals")
@@ -54,6 +54,10 @@ class HospitalFinder:
     @property
     def hospitals(self):
         return self.__hospitals
+
+    @hospitals.setter
+    def hospitals(self, hospitals_list):
+        self.__hospitals = hospitals_list
 
     def _search(self, **kwargs):
         # record start time

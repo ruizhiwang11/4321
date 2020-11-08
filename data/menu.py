@@ -1,18 +1,24 @@
 import random
 
 from hospital_finder import HospitalFinder
+from hospital_generator import HospitalGenerator
 from test_graph_generator import TestGraphGenerator
 
 
 class Menu:
     REAL = 1
     SMALL = 2
-    EXIT = 3
+    TEST = 3
+    EXIT = 4
+    H_TEST = 1
     PRINT = 1
     FILE = 2
 
-    MENU_OPTIONS = (REAL, SMALL, EXIT)
+    MENU_OPTIONS = (REAL, SMALL, TEST, EXIT)
+    TEST_MENU_OPTIONS = [H_TEST]
     OUTPUT_OPTIONS = (PRINT, FILE)
+
+    REAL_GRAPH_PATH = "./roadNet-CA.txt"
 
     def _print_menu(self):
         print(
@@ -24,7 +30,22 @@ class Menu:
             |                                          |
             |   1. Real road network(LA)               |
             |   2. Small random graph(1000 Nodes)      |
-            |   3. End                                 |
+            |   3. Test cases                          |
+            |   4. End                                 |
+            |                                          |
+            ********************************************
+            """
+        )
+
+    def _print_test_menu(self):
+        print(
+            """
+            \n
+            ********************************************
+            |            Demo of test cases            |
+            ********************************************
+            |                                          |
+            |   1. K is unchanged, H increases         |
             |                                          |
             ********************************************
             """
@@ -37,6 +58,15 @@ class Menu:
             "> Please enter correct number for selection: ",
             selection,
             self.MENU_OPTIONS,
+        )
+
+    def _request_test_type(self):
+        self._print_test_menu()
+        selection = int(input("> Please select test to run: "))
+        return self._validate_input(
+            "> Please enter correct number for selection: ",
+            selection,
+            self.TEST_MENU_OPTIONS,
         )
 
     def _request_hospital_number(self):
@@ -87,20 +117,55 @@ class Menu:
 
     def _real_option(self):
         print("\nstart testing on LA road network graph...")
-        graph_path = "./roadNet-CA.txt"
-        return self._option_process(graph_path)
+        return self._option_process(self.REAL_GRAPH_PATH)
 
     def _small_option(self):
         print("\nstart testing on small random graph(1000 nodes)...")
         graph_path = TestGraphGenerator().generate()
         return self._option_process(graph_path)
 
+    def _h_test_option(self):
+        # generate a file with 100000 hispitals
+        hospital_list = []
+        hospitals_path = HospitalGenerator(self.REAL_GRAPH_PATH).generate(100000)
+        with open(hospitals_path, "r") as f:
+            for row in f:
+                id = row.split()[0]
+                if id == "#":
+                    continue
+                hospital_list.append(int(id))
+
+        hospital_small_list = set(hospital_list[0:100])  # 100
+        hospital_large_list = set(hospital_list)  # 100000
+        num_hospital_to_search = 3  # k
+        start_node = 0
+        hospital_finder = HospitalFinder(self.REAL_GRAPH_PATH)
+
+        print("\n\n---------------------------------------------------")
+        print(f"\nTest result for {len(hospital_small_list)} hospitals with k=3")
+        hospital_finder.hospitals = hospital_small_list
+        hospital_finder.print_result(start=start_node, k=num_hospital_to_search)
+
+        print("\n\n---------------------------------------------------")
+        print(f"\nTest result for {len(hospital_large_list)} hospitals with k=3")
+        hospital_finder.hospitals = hospital_large_list
+        hospital_finder.print_result(start=start_node, k=num_hospital_to_search)
+
+    def _test_option(self):
+        test_selection = self._request_test_type()
+        if test_selection == self.H_TEST:
+            self._h_test_option()
+
+        return self._request_type()
+
     def start(self):
         selection = self._request_type()
-        while selection != 3:
+        while selection != self.EXIT:
             if selection == self.REAL:
                 selection = self._real_option()
             elif selection == self.SMALL:
                 selection = self._small_option()
+            elif selection == self.TEST:
+                selection = self._test_option()
 
         print("END...")
