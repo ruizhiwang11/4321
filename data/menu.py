@@ -1,6 +1,7 @@
 import random
 
 from hospital_finder import HospitalFinder
+from test_graph_generator import TestGraphGenerator
 
 
 class Menu:
@@ -57,7 +58,7 @@ class Menu:
     def _request_k_hospital(self, hospital_list):
         message = "> Please enter k value(number of hospital to search): "
         k = int(input(message))
-        return self._validate_input(message, k, range(len(hospital_list)))
+        return self._validate_input(message, k, range(len(hospital_list) + 1))
 
     def _request_ouput(self):
         message = "> Please select output type(1 - print, 2 - file): "
@@ -71,10 +72,9 @@ class Menu:
             current_selection = int(input(message))
         return current_selection
 
-    def _real_option(self):
-        print("\nstart testing on LA road network graph...")
+    def _option_process(self, graph_path):
         num_hospital = self._request_hospital_number()
-        hospital_finder = HospitalFinder("./roadNet-CA.txt", num_hospital)
+        hospital_finder = HospitalFinder(graph_path, num_hospital)
         start_node = self._request_start_node(hospital_finder.graph)
         k = self._request_k_hospital(hospital_finder.hospitals)
         output_type = self._request_ouput()
@@ -85,12 +85,15 @@ class Menu:
             hospital_finder.save_result(start=start_node, k=k)
         return self._request_type()
 
+    def _real_option(self):
+        print("\nstart testing on LA road network graph...")
+        graph_path = "./roadNet-CA.txt"
+        return self._option_process(graph_path)
+
     def _small_option(self):
         print("\nstart testing on small random graph(1000 nodes)...")
-        num_hospital = self._request_hospital_number()
-        output_type = self._request_ouput()
-        print("num_hospital: ", num_hospital, ", output_type: ", output_type)
-        return self._request_type()
+        graph_path = TestGraphGenerator().generate()
+        return self._option_process(graph_path)
 
     def start(self):
         selection = self._request_type()
