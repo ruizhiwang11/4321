@@ -47,21 +47,3 @@ class HospitalGenerator:
 
         print(f"generated hospital text file - {filename}")
         return filename
-
-
-if __name__ == "__main__":
-    # test cases
-    hg = HospitalGenerator("./roadNet-CA.txt")
-    # hg.generate(hospital_ratio=0)
-    # hg.generate(hospital_ratio=11)
-    # hg.generate(hospital_ratio=-2)
-    # hg.generate(hospital_ratio="asdq")
-    # hg.generate(99999999999999)
-    # hg.generate(99999999999999, 5)
-    # hg.generate(5, 500)
-
-    # VALID input tests
-    # hg.generate(5, 2)
-    # hg.generate(hospital_ratio=5.5)
-    # hg.generate(5)
-    print(hg.generate(340))
